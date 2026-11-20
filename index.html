@@ -12,18 +12,20 @@
     :root {
       color-scheme: light;
       font-family: Inter, Arial, Helvetica, sans-serif;
-      --ink: #111b2f;
       --navy: #06145e;
-      --muted: #647089;
-      --blue: #10285a;
+      --ink: #111b2f;
     }
 
     * { box-sizing: border-box; }
 
+    html,
     body {
+      height: 100%;
       margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
+    }
+
+    body {
       background:
         radial-gradient(circle at 10% 12%, rgba(255,255,255,.95) 0 1.5px, transparent 1.8px),
         radial-gradient(circle at 88% 18%, rgba(255,255,255,.8) 0 1.5px, transparent 1.8px),
@@ -36,8 +38,11 @@
 
     .shell {
       width: min(620px, calc(100% - 32px));
+      height: 100vh;
       margin: 0 auto;
-      padding: 104px 0 48px;
+      padding-top: 104px;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
     }
 
     h1 {
@@ -61,9 +66,7 @@
       border: 1px solid rgba(255,255,255,.92);
       border-radius: 38px;
       background: rgba(255,255,255,.96);
-      box-shadow:
-        0 18px 32px rgba(54,75,125,.15),
-        0 5px 12px rgba(54,75,125,.10);
+      box-shadow: 0 18px 32px rgba(54,75,125,.15), 0 5px 12px rgba(54,75,125,.10);
     }
 
     .search-input {
@@ -104,7 +107,6 @@
       color: #fff;
       font: 500 21px/1 Inter, Arial, sans-serif;
       cursor: pointer;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
       transition: transform .15s ease, background .15s ease;
     }
 
@@ -112,15 +114,24 @@
     .search-button:active { transform: scale(.97); }
 
     .results {
-      min-height: 364px;
+      min-height: 0;
+      margin-bottom: 48px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
       padding: 54px 56px 48px;
       border: 1px solid rgba(255,255,255,.96);
       border-radius: 22px;
       background: rgba(255,255,255,.96);
-      box-shadow:
-        0 24px 38px rgba(54,75,125,.16),
-        0 8px 16px rgba(54,75,125,.07);
+      box-shadow: 0 24px 38px rgba(54,75,125,.16), 0 8px 16px rgba(54,75,125,.07);
+      scrollbar-width: thin;
+      scrollbar-color: #aebcff #edf2ff;
     }
+
+    .results::-webkit-scrollbar { width: 11px; }
+    .results::-webkit-scrollbar-track { background: #edf2ff; border-radius: 999px; }
+    .results::-webkit-scrollbar-thumb { background: #aebcff; border: 2px solid #edf2ff; border-radius: 999px; }
+    .results::-webkit-scrollbar-thumb:hover { background: #8fa3ed; }
 
     .result-content { max-width: 100%; }
 
@@ -138,21 +149,8 @@
       line-height: 1;
       font-weight: 800;
       letter-spacing: -1.5px;
+      overflow-wrap: anywhere;
     }
-
-    .speaker-button {
-      display: grid;
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      place-items: center;
-      border: 0;
-      background: transparent;
-      color: #111;
-      cursor: pointer;
-    }
-
-    .speaker-button svg { width: 26px; height: 26px; }
 
     .phonetic {
       margin: 0;
@@ -185,6 +183,7 @@
       font-size: 19px;
       line-height: 1.38;
       counter-increment: definition;
+      overflow-wrap: anywhere;
     }
 
     .definitions li::before {
@@ -200,13 +199,17 @@
       font-style: italic;
     }
 
-    .status {
-      margin: 0;
-      color: #626b7a;
+    .google-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #10285a;
       font-size: 18px;
-      line-height: 1.5;
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
     }
 
+    .status { margin: 0; color: #626b7a; font-size: 18px; line-height: 1.5; }
     .status.error { color: #9c1717; }
 
     @media (max-width: 600px) {
@@ -216,7 +219,7 @@
       .search-input { font-size: 19px; }
       .search-icon { display: none; }
       .search-button { flex-basis: 105px; height: 50px; font-size: 18px; }
-      .results { min-height: 330px; padding: 38px 28px; border-radius: 18px; }
+      .results { margin-bottom: 24px; padding: 38px 28px; border-radius: 18px; }
       .word-row h2 { font-size: 38px; }
       .definitions li { font-size: 17px; }
     }
@@ -227,7 +230,7 @@
     <h1>Magic Dictionary</h1>
 
     <form class="search-form" id="search-form" role="search">
-      <input class="search-input" id="word-input" name="word" type="search" value="enchant" placeholder="Search a word" aria-label="Search for an English word" autocomplete="off" required>
+      <input class="search-input" id="word-input" name="word" type="search" value="Dictionary" placeholder="Search a word" aria-label="Search for an English word" autocomplete="off" required>
       <button class="search-icon" type="submit" aria-label="Search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <circle cx="10.8" cy="10.8" r="6.8"></circle>
@@ -256,12 +259,9 @@
       result.append(paragraph);
     }
 
-    function stripMeaningCounts(definitions) {
-      return definitions.slice(0, 2);
-    }
-
     async function lookup(word) {
       if (!word) return;
+      resultsPanel.scrollTo({ top: 0 });
       resultsPanel.setAttribute('aria-busy', 'true');
       setStatus(`Looking up “${word}”…`);
 
@@ -278,41 +278,22 @@
 
         const wordRow = document.createElement('div');
         wordRow.className = 'word-row';
-
         const heading = document.createElement('h2');
         heading.textContent = entry.word || word;
         wordRow.append(heading);
 
         const phonetic = entry.phonetic || entry.phonetics?.find(item => item.text)?.text;
-        const audio = entry.phonetics?.find(item => item.audio)?.audio;
-
-        const speaker = document.createElement('button');
-        speaker.className = 'speaker-button';
-        speaker.type = 'button';
-        speaker.setAttribute('aria-label', `Pronounce ${entry.word || word}`);
-        speaker.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05A4.48 4.48 0 0016.5 12zm-2.5-8.77v2.06A6.5 6.5 0 0117.5 12a6.5 6.5 0 01-.5 5.71v2.06A8.5 8.5 0 0019.5 12c0-3.59-2.2-6.66-5.5-7.77z"/></svg>';
-        speaker.addEventListener('click', () => {
-          if (audio) new Audio(audio.startsWith('http') ? audio : `https://api.dictionaryapi.dev/media/pronunciations/en/${encodeURIComponent(entry.word)}-en.mp3`).play();
-          else if ('speechSynthesis' in window) {
-            speechSynthesis.cancel();
-            speechSynthesis.speak(new SpeechSynthesisUtterance(entry.word || word));
-          }
-        });
-        wordRow.append(speaker);
-
         if (phonetic) {
           const phoneticText = document.createElement('p');
           phoneticText.className = 'phonetic';
           phoneticText.textContent = phonetic;
           wordRow.append(phoneticText);
         }
-
         result.append(wordRow);
 
-        let shown = 0;
+        let definitionCount = 0;
         for (const meaning of entry.meanings || []) {
-          if (shown >= 2) break;
-          const definitions = stripMeaningCounts((meaning.definitions || []).filter(item => item.definition));
+          const definitions = (meaning.definitions || []).filter(item => item.definition);
           if (!definitions.length) continue;
 
           const part = document.createElement('h3');
@@ -323,7 +304,6 @@
           const list = document.createElement('ol');
           list.className = 'definitions';
           for (const item of definitions) {
-            if (shown >= 2) break;
             const listItem = document.createElement('li');
             listItem.textContent = item.definition;
             if (item.example) {
@@ -333,12 +313,23 @@
               listItem.append(example);
             }
             list.append(listItem);
-            shown++;
+            definitionCount++;
           }
           result.append(list);
         }
 
-        if (!shown) setStatus(`No English definition found for “${word}”. Check the spelling and try again.`, true);
+        if (!definitionCount) {
+          setStatus(`No English definition found for “${word}”. Check the spelling and try again.`, true);
+          return;
+        }
+
+        const googleLink = document.createElement('a');
+        googleLink.className = 'google-link';
+        googleLink.href = `https://www.google.com/search?q=${encodeURIComponent(`${word} meaning`)}`;
+        googleLink.target = '_blank';
+        googleLink.rel = 'noopener noreferrer';
+        googleLink.textContent = `Search “${word}” on Google`;
+        result.append(googleLink);
       } catch (error) {
         setStatus(error.message || 'Something went wrong while looking up that word. Please try again.', true);
       } finally {
@@ -351,7 +342,7 @@
       lookup(input.value.trim());
     });
 
-    lookup('enchant');
+    lookup('Dictionary');
   </script>
 </body>
 </html>
