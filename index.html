@@ -3,111 +3,243 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#b8ff70">
+  <meta name="theme-color" content="#eef3ff">
   <title>Magic Dictionary</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #b8ff70;
-      color: #080808;
-      scrollbar-width: none;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      --ink: #111b2f;
+      --navy: #06145e;
+      --muted: #647089;
+      --blue: #10285a;
     }
 
     * { box-sizing: border-box; }
-    html, body { overflow-x: hidden; scrollbar-width: none; }
-    html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 21px 5.65% 26px;
-      background: #b8ff70;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 10% 12%, rgba(255,255,255,.95) 0 1.5px, transparent 1.8px),
+        radial-gradient(circle at 88% 18%, rgba(255,255,255,.8) 0 1.5px, transparent 1.8px),
+        radial-gradient(circle at 18% 76%, rgba(255,255,255,.75) 0 1.5px, transparent 1.8px),
+        radial-gradient(circle at 76% 82%, rgba(255,255,255,.8) 0 1.5px, transparent 1.8px),
+        linear-gradient(135deg, #edf6ff 0%, #f5f5fb 48%, #edf6ff 100%);
+      background-size: 120px 120px, 180px 180px, 150px 150px, 210px 210px, auto;
+      color: var(--ink);
     }
 
-    .site-title {
-      display: block;
-      width: fit-content;
-      max-width: 100%;
-      margin: 0 auto 13px;
-      color: #1600c9;
-      font-family: "Orbitron", Arial, sans-serif;
-      font-size: clamp(25px, 4.45vw, 46px);
-      font-weight: 700;
-      letter-spacing: .075em;
-      line-height: 1.25;
+    .shell {
+      width: min(620px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 104px 0 48px;
+    }
+
+    h1 {
+      margin: 0 0 34px;
+      color: var(--navy);
+      font-size: clamp(38px, 7vw, 52px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -2.5px;
       text-align: center;
-      text-decoration: none;
-      white-space: nowrap;
+      text-shadow: 0 1px 0 rgba(255,255,255,.8);
     }
 
     .search-form {
       display: flex;
-      width: min(530px, 100%);
-      height: 44px;
-      margin: 0 auto 23px;
-      overflow: hidden;
-      border: 3px solid #080808;
-      border-radius: 32px;
-      background: #fff;
+      align-items: center;
+      width: 100%;
+      height: 68px;
+      margin-bottom: 40px;
+      padding: 7px 8px 7px 31px;
+      border: 1px solid rgba(255,255,255,.92);
+      border-radius: 38px;
+      background: rgba(255,255,255,.96);
+      box-shadow:
+        0 18px 32px rgba(54,75,125,.15),
+        0 5px 12px rgba(54,75,125,.10);
     }
 
     .search-input {
       flex: 1;
       min-width: 0;
-      padding: 3px 18px;
+      height: 100%;
+      padding: 0;
       border: 0;
       outline: 0;
       background: transparent;
-      color: #111;
-      font: 22px Arial, Helvetica, sans-serif;
+      color: #161b25;
+      font: 500 22px/1 Inter, Arial, sans-serif;
     }
 
-    .search-input::placeholder { color: #aaa; opacity: 1; }
-    .search-input::-webkit-search-cancel-button { cursor: pointer; }
+    .search-input::placeholder { color: #a1a4ac; opacity: 1; }
+
+    .search-icon {
+      display: grid;
+      flex: 0 0 36px;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      margin-right: 8px;
+      border: 0;
+      background: transparent;
+      color: #4f596c;
+      cursor: pointer;
+    }
+
+    .search-icon svg { width: 29px; height: 29px; }
+
+    .search-button {
+      flex: 0 0 122px;
+      height: 54px;
+      border: 0;
+      border-radius: 29px;
+      background: #1a2f62;
+      color: #fff;
+      font: 500 21px/1 Inter, Arial, sans-serif;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .search-button:hover { background: #102450; }
+    .search-button:active { transform: scale(.97); }
 
     .results {
-      width: 100%;
-      min-height: min(571px, calc(100vh - 185px));
-      padding: clamp(20px, 4vw, 48px);
-      overflow-wrap: anywhere;
-      border: 3px solid #080808;
-      border-radius: 20px;
-      background: #fff;
+      min-height: 364px;
+      padding: 54px 56px 48px;
+      border: 1px solid rgba(255,255,255,.96);
+      border-radius: 22px;
+      background: rgba(255,255,255,.96);
+      box-shadow:
+        0 24px 38px rgba(54,75,125,.16),
+        0 8px 16px rgba(54,75,125,.07);
     }
 
-    .result-content { max-width: 900px; margin: 0 auto; }
-    .result-content h2 { margin: 0 0 18px; font-size: clamp(25px, 4vw, 34px); }
-    .result-content h3 { margin: 24px 0 8px; font-size: 20px; }
-    .result-content p, .result-content li { font-size: 18px; line-height: 1.55; }
-    .result-content p { margin: 8px 0; }
-    .result-content ol { padding-left: 26px; }
-    .result-content a { color: #1600a8; }
-    .status { margin: 0; font-size: 18px; line-height: 1.5; }
+    .result-content { max-width: 100%; }
+
+    .word-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 21px;
+    }
+
+    .word-row h2 {
+      margin: 0;
+      color: #09174f;
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+    }
+
+    .speaker-button {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      place-items: center;
+      border: 0;
+      background: transparent;
+      color: #111;
+      cursor: pointer;
+    }
+
+    .speaker-button svg { width: 26px; height: 26px; }
+
+    .phonetic {
+      margin: 0;
+      color: #4c5667;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+
+    .part-of-speech {
+      margin: 20px 0 12px;
+      color: #191e27;
+      font-size: 20px;
+      line-height: 1.2;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .definitions {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: definition;
+    }
+
+    .definitions li {
+      position: relative;
+      margin: 0 0 20px;
+      padding-left: 30px;
+      color: #111;
+      font-size: 19px;
+      line-height: 1.38;
+      counter-increment: definition;
+    }
+
+    .definitions li::before {
+      content: counter(definition) ".";
+      position: absolute;
+      left: 0;
+    }
+
+    .example {
+      display: block;
+      margin-top: 4px;
+      color: #555;
+      font-style: italic;
+    }
+
+    .status {
+      margin: 0;
+      color: #626b7a;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
     .status.error { color: #9c1717; }
 
     @media (max-width: 600px) {
-      body { padding: 20px 5% 22px; }
-      .site-title { margin-bottom: 16px; letter-spacing: .035em; }
-      .search-form { height: 40px; margin-bottom: 18px; }
+      .shell { width: calc(100% - 28px); padding-top: 62px; }
+      h1 { margin-bottom: 25px; font-size: 36px; letter-spacing: -2px; }
+      .search-form { height: 62px; margin-bottom: 25px; padding-left: 22px; }
       .search-input { font-size: 19px; }
-      .results { min-height: calc(100vh - 166px); border-radius: 16px; }
+      .search-icon { display: none; }
+      .search-button { flex-basis: 105px; height: 50px; font-size: 18px; }
+      .results { min-height: 330px; padding: 38px 28px; border-radius: 18px; }
+      .word-row h2 { font-size: 38px; }
+      .definitions li { font-size: 17px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a class="site-title" href="index.html">MAGIC DICTIONARY</a>
-    <form class="search-form" id="search-form" role="search">
-      <input class="search-input" id="word-input" name="word" type="search" placeholder="search" aria-label="Search for an English word" autocomplete="off" required>
-    </form>
-  </header>
+  <main class="shell">
+    <h1>Magic Dictionary</h1>
 
-  <main class="results" id="results" aria-live="polite" aria-busy="false">
-    <div class="result-content" id="result-content"></div>
+    <form class="search-form" id="search-form" role="search">
+      <input class="search-input" id="word-input" name="word" type="search" value="enchant" placeholder="Search a word" aria-label="Search for an English word" autocomplete="off" required>
+      <button class="search-icon" type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="10.8" cy="10.8" r="6.8"></circle>
+          <path d="M16 16l5 5"></path>
+        </svg>
+      </button>
+      <button class="search-button" type="submit">Search</button>
+    </form>
+
+    <section class="results" id="results" aria-live="polite" aria-busy="false">
+      <div class="result-content" id="result-content"></div>
+    </section>
   </main>
 
   <script>
@@ -124,11 +256,12 @@
       result.append(paragraph);
     }
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const word = input.value.trim();
-      if (!word) return;
+    function stripMeaningCounts(definitions) {
+      return definitions.slice(0, 2);
+    }
 
+    async function lookup(word) {
+      if (!word) return;
       resultsPanel.setAttribute('aria-busy', 'true');
       setStatus(`Looking up “${word}”…`);
 
@@ -143,54 +276,82 @@
         const entry = entries[0];
         result.replaceChildren();
 
+        const wordRow = document.createElement('div');
+        wordRow.className = 'word-row';
+
         const heading = document.createElement('h2');
         heading.textContent = entry.word || word;
-        result.append(heading);
+        wordRow.append(heading);
 
         const phonetic = entry.phonetic || entry.phonetics?.find(item => item.text)?.text;
+        const audio = entry.phonetics?.find(item => item.audio)?.audio;
+
+        const speaker = document.createElement('button');
+        speaker.className = 'speaker-button';
+        speaker.type = 'button';
+        speaker.setAttribute('aria-label', `Pronounce ${entry.word || word}`);
+        speaker.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05A4.48 4.48 0 0016.5 12zm-2.5-8.77v2.06A6.5 6.5 0 0117.5 12a6.5 6.5 0 01-.5 5.71v2.06A8.5 8.5 0 0019.5 12c0-3.59-2.2-6.66-5.5-7.77z"/></svg>';
+        speaker.addEventListener('click', () => {
+          if (audio) new Audio(audio.startsWith('http') ? audio : `https://api.dictionaryapi.dev/media/pronunciations/en/${encodeURIComponent(entry.word)}-en.mp3`).play();
+          else if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            speechSynthesis.speak(new SpeechSynthesisUtterance(entry.word || word));
+          }
+        });
+        wordRow.append(speaker);
+
         if (phonetic) {
-          const pronunciation = document.createElement('p');
-          pronunciation.textContent = phonetic;
-          result.append(pronunciation);
+          const phoneticText = document.createElement('p');
+          phoneticText.className = 'phonetic';
+          phoneticText.textContent = phonetic;
+          wordRow.append(phoneticText);
         }
 
-        let definitionCount = 0;
-        for (const meaning of entry.meanings || []) {
-          const definitions = (meaning.definitions || []).filter(item => item.definition);
-          if (!definitions.length) continue;
-          definitionCount += definitions.length;
+        result.append(wordRow);
 
-          const partOfSpeech = document.createElement('h3');
-          partOfSpeech.textContent = meaning.partOfSpeech || 'Meaning';
-          result.append(partOfSpeech);
+        let shown = 0;
+        for (const meaning of entry.meanings || []) {
+          if (shown >= 2) break;
+          const definitions = stripMeaningCounts((meaning.definitions || []).filter(item => item.definition));
+          if (!definitions.length) continue;
+
+          const part = document.createElement('h3');
+          part.className = 'part-of-speech';
+          part.textContent = meaning.partOfSpeech || 'Meaning';
+          result.append(part);
 
           const list = document.createElement('ol');
+          list.className = 'definitions';
           for (const item of definitions) {
+            if (shown >= 2) break;
             const listItem = document.createElement('li');
             listItem.textContent = item.definition;
+            if (item.example) {
+              const example = document.createElement('span');
+              example.className = 'example';
+              example.textContent = `“${item.example}”`;
+              listItem.append(example);
+            }
             list.append(listItem);
+            shown++;
           }
           result.append(list);
         }
 
-        if (!definitionCount) {
-          setStatus(`No English definition found for “${word}”. Check the spelling and try again.`, true);
-        }
-
-        const googleLink = document.createElement('p');
-        const link = document.createElement('a');
-        link.href = `https://www.google.com/search?q=${encodeURIComponent(`${word} meaning`)}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = `Search “${word}” on Google`;
-        googleLink.append(link);
-        result.append(googleLink);
+        if (!shown) setStatus(`No English definition found for “${word}”. Check the spelling and try again.`, true);
       } catch (error) {
         setStatus(error.message || 'Something went wrong while looking up that word. Please try again.', true);
       } finally {
         resultsPanel.setAttribute('aria-busy', 'false');
       }
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      lookup(input.value.trim());
     });
+
+    lookup('enchant');
   </script>
 </body>
 </html>
